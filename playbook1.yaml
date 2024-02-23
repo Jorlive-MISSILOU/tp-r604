@@ -1,0 +1,20 @@
+---
+- hosts: client11
+  become: true
+  tasks:
+    - name: Vérification de la connexion
+      ping: null
+    - name: Installation Apache2
+      apt:
+        name: apache2
+        state: latest
+        update_cache: yes
+    - name: Modification page de démarrage
+      copy:
+        src: /home/vagrant/files/index.html
+        dest: /var/www/html/index.html
+    - name: Gestion du service Apache2
+      service:
+        name: apache2
+        state: started
+        enabled: yes

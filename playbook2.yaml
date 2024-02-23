@@ -1,0 +1,47 @@
+---
+- hosts: client22
+  become: true
+  tasks:
+  - name: Vérification de la connexion
+    ping:
+  - name: installation package serveur MySQL [mysql-server]
+    apt:
+      name: mysql-server
+      state: latest
+      update_cache: yes
+  - name: Installation package python3-pymysql
+    apt:
+      name: python3-pymysql
+      state: latest
+  - name: Autorisation connexions à distance
+    lineinfile:
+      path: /etc/mysql/mysql.conf.d/mysqld.cnf
+      regexp:   '^bind-address'
+      line: 'bind-address = 0.0.0.0'
+  - name: Relancement du service mysql
+    service:
+      name: mysql
+      state: restarted
+  - name: Gestion du service mysql
+    service:
+      name: mysql
+      state: started
+      enabled: yes
+  - name: Création de l utilisateur boby
+    mysql_user:
+      name: boby
+      host: 10.10.20.4
+      password: azerty
+      state: present
+      priv: '*.*:ALL'
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- hosts: client11
+  become: true
+  tasks:
+  - name: Vérification de la connexion
+    ping:
+  - name: Installation client MySQL [mysql-client]
+    apt:
+      name: mysql-client
+      state: latest
